@@ -49,7 +49,6 @@ let databaseConfig;
 if (process.env.NODE_ENV === 'production' || process.env.DATABASE_URL?.startsWith('postgres')) {
   databaseConfig = {
     provider: 'postgresql' as const,  // ← PostgreSQL in production
-    useMigrations: true,
     url: process.env.DATABASE_URL,
   };
 } else {
