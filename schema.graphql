@@ -328,6 +328,10 @@ type Post {
   author: User
   tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
   tagsCount(where: TagWhereInput! = {}): Int
+  slug: String
+  toPublish: String
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 type CloudinaryImage_File {
@@ -384,6 +388,7 @@ type Post_content_Document {
 
 input PostWhereUniqueInput {
   id: ID
+  slug: String
 }
 
 input PostWhereInput {
@@ -394,6 +399,10 @@ input PostWhereInput {
   title: StringFilter
   author: UserWhereInput
   tags: TagManyRelationFilter
+  slug: StringFilter
+  toPublish: StringNullableFilter
+  createdAt: DateTimeNullableFilter
+  updatedAt: DateTimeNullableFilter
 }
 
 input TagManyRelationFilter {
@@ -405,6 +414,10 @@ input TagManyRelationFilter {
 input PostOrderByInput {
   id: OrderDirection
   title: OrderDirection
+  slug: OrderDirection
+  toPublish: OrderDirection
+  createdAt: OrderDirection
+  updatedAt: OrderDirection
 }
 
 input PostUpdateInput {
@@ -413,6 +426,10 @@ input PostUpdateInput {
   content: JSON
   author: UserRelateToOneForUpdateInput
   tags: TagRelateToManyForUpdateInput
+  slug: String
+  toPublish: String
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -442,6 +459,10 @@ input PostCreateInput {
   content: JSON
   author: UserRelateToOneForCreateInput
   tags: TagRelateToManyForCreateInput
+  slug: String
+  toPublish: String
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 input UserRelateToOneForCreateInput {

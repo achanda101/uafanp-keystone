@@ -55,13 +55,17 @@ model Page {
 }
 
 model Post {
-  id       String  @id @default(cuid())
-  title    String  @default("")
-  banner   String?
-  content  String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
-  author   User?   @relation("Post_author", fields: [authorId], references: [id])
-  authorId String? @map("author")
-  tags     Tag[]   @relation("Post_tags")
+  id        String    @id @default(cuid())
+  title     String    @default("")
+  banner    String?
+  content   String    @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
+  author    User?     @relation("Post_author", fields: [authorId], references: [id])
+  authorId  String?   @map("author")
+  tags      Tag[]     @relation("Post_tags")
+  slug      String    @unique @default("")
+  toPublish String?   @default("draft")
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt
 
   @@index([authorId])
 }

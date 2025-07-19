@@ -385,12 +385,10 @@ export const lists = {
 
   Post: list({
     access: allowAll,
+
     fields: {
       title: text({
         validation: { isRequired: true },
-        ui: {
-          description: 'Title of Page',
-        },
       }),
 
       banner: cloudinaryImage({
@@ -411,6 +409,7 @@ export const lists = {
         links: true,
         dividers: true,
       }),
+
       author: relationship({
         ref: 'User.posts',
         ui: {
@@ -434,75 +433,72 @@ export const lists = {
           inlineCreate: { fields: [ 'name' ] },
         },
       }),
-
-      slug: text({
-        validation: { isRequired: true },
-        isIndexed: 'unique',
-        ui: {
-          description: 'URL-friendly version of the title (e.g., about-us)',
-        },
-      }),
-
-      // Meta fields
-      toPublish: select({
-        options: [
-          { label: 'Published', value: 'published' },
-          { label: 'Draft', value: 'draft' },
-        ],
-        defaultValue: 'draft',
-        ui: {
-          description: 'Set to Published to display this page on the website',
-        },
-      }),
-      createdAt: timestamp({
-        // this sets the timestamp to Date.now() when the user is first created
-        defaultValue: { kind: 'now' },
-      }),
-      updatedAt: timestamp({
-        defaultValue: { kind: 'now' },
-        db: { updatedAt: true },
-      }),
     },
     ui: {
       labelField: 'title',
       listView: {
-        initialColumns: [ 'title', 'updatedAt' ],
+        initialColumns: [ 'title', 'author', 'createdAt' ],
         initialSort: {
-          field: 'updatedAt',
+          field: 'createdAt',
           direction: 'DESC'
         }
+      },
+      itemView: {
+        defaultFieldMode: 'edit',
       },
     },
   }),
 
   User: list({
+    // WARNING
+    //   for this starter project, anyone can create, query, update and delete anything
+    //   if you want to prevent random people on the internet from accessing your data,
+    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
     access: allowAll,
 
+    // this is the fields for our User list
     fields: {
+      // by adding isRequired, we enforce that every User should have a name
+      //   if no name is provided, an error will be displayed
       name: text({ validation: { isRequired: true } }),
 
       email: text({
         validation: { isRequired: true },
+        // by adding isIndexed: 'unique', we're saying that no user can have the same
+        // email as another user - this may or may not be a good idea for your project
         isIndexed: 'unique',
       }),
 
       password: password({ validation: { isRequired: true } }),
+
+      // we can use this field to see what Posts this User has authored
+      //   more on that in the Post list below
       posts: relationship({ ref: 'Post.author', many: true }),
 
       createdAt: timestamp({
+        // this sets the timestamp to Date.now() when the user is first created
         defaultValue: { kind: 'now' },
       }),
     },
   }),
 
+  // this last list is our Tag list, it only has a name field for now
   Tag: list({
+    // WARNING
+    //   for this starter project, anyone can create, query, update and delete anything
+    //   if you want to prevent random people on the internet from accessing your data,
+    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
     access: allowAll,
+
+    // setting this to isHidden for the user interface prevents this list being visible in the Admin UI
     ui: {
       isHidden: true,
     },
 
+    // this is the fields for our Tag list
     fields: {
       name: text(),
+      // this can be helpful to find out all the Posts associated with a Tag
       posts: relationship({ ref: 'Post.tags', many: true }),
     },
   }),
