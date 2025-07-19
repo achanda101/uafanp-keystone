@@ -387,7 +387,7 @@ export const lists = {
       title: text({
         validation: { isRequired: true },
         ui: {
-          description: 'Title of Page',
+          description: 'Title of Post',
         },
       }),
 
