@@ -14,7 +14,7 @@ import {
 } from '@keystone-6/core/fields';
 import { cloudinaryImage } from '@keystone-6/cloudinary'
 import { graphql } from '@keystone-6/core';
-import { document } from '@keystone-6/fields-document'
+// import { document } from '@keystone-6/fields-document'
 import { type Lists } from '.keystone/types'
 
 // Validate environment variables before creating config
@@ -544,17 +544,25 @@ export const lists = {
         },
       }),
 
-      content: document({
-        formatting: true,
-        layouts: [
-          [ 1, 1 ],
-          [ 1, 1, 1 ],
-          [ 2, 1 ],
-          [ 1, 2 ],
-          [ 1, 2, 1 ],
-        ],
-        links: true,
-        dividers: true,
+      // content: document({
+      //   formatting: true,
+      //   layouts: [
+      //     [ 1, 1 ],
+      //     [ 1, 1, 1 ],
+      //     [ 2, 1 ],
+      //     [ 1, 2 ],
+      //     [ 1, 2, 1 ],
+      //   ],
+      //   links: true,
+      //   dividers: true,
+      // }),
+
+      // Using basic text field instead of document field for now
+      content: text({
+        ui: {
+          displayMode: 'textarea',
+          description: 'Post content (basic text for now)',
+        },
       }),
 
       author: relationship({

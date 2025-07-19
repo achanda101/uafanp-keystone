@@ -27,6 +27,14 @@ function validateCloudinaryConfig() {
   return requiredVars
 }
 
+// Validate session secret
+if (!process.env.SESSION_SECRET) {
+  console.error('SESSION_SECRET environment variable is required')
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1)
+  }
+}
+
 // Validate environment configuration
 try {
   validateCloudinaryConfig()
@@ -39,9 +47,13 @@ export default withAuth(
   config({
     db: {
       provider: 'sqlite',
-      url: 'file:./keystone.db',
+      url: process.env.DATABASE_URL || 'file:./keystone.db',
     },
     lists,
     session,
+    server: {
+      cors: { origin: true, credentials: true },
+      port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
+    },
   })
 )

@@ -1,5 +1,5 @@
 {
-  "name": "uafanp-keystone-app",
+  "name": "keystone-app",
   "version": "1.0.3",
   "private": true,
   "engines": {
@@ -14,11 +14,9 @@
   "dependencies": {
     "@keystone-6/auth": "7.0.3",
     "@keystone-6/core": "5.8.0",
-    "@keystone-6/fields-document": "8.0.2",
+    "@keystone-6/cloudinary": "7.0.2",
     "dotenv": "16.3.1",
     "typescript": "5.2.2",
-    "fp-ts": "2.16.1",
-    "io-ts": "2.2.20",
     "prisma": "5.6.0",
     "@prisma/client": "5.6.0"
   }

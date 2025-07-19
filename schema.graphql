@@ -330,7 +330,7 @@ type Post {
   title: String
   slug: String
   banner: CloudinaryImage_File
-  content: Post_content_Document
+  content: String
   author: User
   tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
   tagsCount(where: TagWhereInput! = {}): Int
@@ -387,10 +387,6 @@ input CloudinaryImageFormat {
   transformation: String
 }
 
-type Post_content_Document {
-  document(hydrateRelationships: Boolean! = false): JSON!
-}
-
 input PostWhereUniqueInput {
   id: ID
   slug: String
@@ -403,6 +399,7 @@ input PostWhereInput {
   id: IDFilter
   title: StringFilter
   slug: StringFilter
+  content: StringFilter
   author: UserWhereInput
   tags: TagManyRelationFilter
   toPublish: StringNullableFilter
@@ -420,6 +417,7 @@ input PostOrderByInput {
   id: OrderDirection
   title: OrderDirection
   slug: OrderDirection
+  content: OrderDirection
   toPublish: OrderDirection
   createdAt: OrderDirection
   updatedAt: OrderDirection
@@ -429,7 +427,7 @@ input PostUpdateInput {
   title: String
   slug: String
   banner: Upload
-  content: JSON
+  content: String
   author: UserRelateToOneForUpdateInput
   tags: TagRelateToManyForUpdateInput
   toPublish: String
@@ -462,7 +460,7 @@ input PostCreateInput {
   title: String
   slug: String
   banner: Upload
-  content: JSON
+  content: String
   author: UserRelateToOneForCreateInput
   tags: TagRelateToManyForCreateInput
   toPublish: String

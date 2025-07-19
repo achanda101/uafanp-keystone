@@ -59,7 +59,7 @@ model Post {
   title     String    @default("")
   slug      String    @unique @default("")
   banner    String?
-  content   String    @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
+  content   String    @default("")
   author    User?     @relation("Post_author", fields: [authorId], references: [id])
   authorId  String?   @map("author")
   tags      Tag[]     @relation("Post_tags")
