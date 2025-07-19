@@ -247,11 +247,11 @@ input GrantTypeCreateInput {
 type Page {
   id: ID!
   title: String
+  slug: String
   heroHeading: String
   heroSubheading: String
   ctaButtonText: String
   ctaButtonUrl: String
-  slug: String
   toPublish: String
   createdAt: DateTime
   updatedAt: DateTime
@@ -268,11 +268,11 @@ input PageWhereInput {
   NOT: [PageWhereInput!]
   id: IDFilter
   title: StringFilter
+  slug: StringFilter
   heroHeading: StringFilter
   heroSubheading: StringFilter
   ctaButtonText: StringFilter
   ctaButtonUrl: StringFilter
-  slug: StringFilter
   toPublish: StringNullableFilter
   createdAt: DateTimeNullableFilter
   updatedAt: DateTimeNullableFilter
@@ -281,11 +281,11 @@ input PageWhereInput {
 input PageOrderByInput {
   id: OrderDirection
   title: OrderDirection
+  slug: OrderDirection
   heroHeading: OrderDirection
   heroSubheading: OrderDirection
   ctaButtonText: OrderDirection
   ctaButtonUrl: OrderDirection
-  slug: OrderDirection
   toPublish: OrderDirection
   createdAt: OrderDirection
   updatedAt: OrderDirection
@@ -293,11 +293,11 @@ input PageOrderByInput {
 
 input PageUpdateInput {
   title: String
+  slug: String
   heroHeading: String
   heroSubheading: String
   ctaButtonText: String
   ctaButtonUrl: String
-  slug: String
   toPublish: String
   createdAt: DateTime
   updatedAt: DateTime
@@ -310,11 +310,11 @@ input PageUpdateArgs {
 
 input PageCreateInput {
   title: String
+  slug: String
   heroHeading: String
   heroSubheading: String
   ctaButtonText: String
   ctaButtonUrl: String
-  slug: String
   toPublish: String
   createdAt: DateTime
   updatedAt: DateTime
@@ -323,12 +323,12 @@ input PageCreateInput {
 type Post {
   id: ID!
   title: String
+  slug: String
   banner: CloudinaryImage_File
   content: Post_content_Document
   author: User
   tags(where: TagWhereInput! = {}, orderBy: [TagOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TagWhereUniqueInput): [Tag!]
   tagsCount(where: TagWhereInput! = {}): Int
-  slug: String
   toPublish: String
   createdAt: DateTime
   updatedAt: DateTime
@@ -397,9 +397,9 @@ input PostWhereInput {
   NOT: [PostWhereInput!]
   id: IDFilter
   title: StringFilter
+  slug: StringFilter
   author: UserWhereInput
   tags: TagManyRelationFilter
-  slug: StringFilter
   toPublish: StringNullableFilter
   createdAt: DateTimeNullableFilter
   updatedAt: DateTimeNullableFilter
@@ -422,11 +422,11 @@ input PostOrderByInput {
 
 input PostUpdateInput {
   title: String
+  slug: String
   banner: Upload
   content: JSON
   author: UserRelateToOneForUpdateInput
   tags: TagRelateToManyForUpdateInput
-  slug: String
   toPublish: String
   createdAt: DateTime
   updatedAt: DateTime
@@ -455,11 +455,11 @@ input PostUpdateArgs {
 
 input PostCreateInput {
   title: String
+  slug: String
   banner: Upload
   content: JSON
   author: UserRelateToOneForCreateInput
   tags: TagRelateToManyForCreateInput
-  slug: String
   toPublish: String
   createdAt: DateTime
   updatedAt: DateTime

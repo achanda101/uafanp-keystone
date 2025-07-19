@@ -29,6 +29,44 @@ if (!cloudName || !apiKey || !apiSecret) {
   `)
 }
 
+// Helper function to create slug from title
+function createSlugFromTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .substring(0, 100); // Limit length
+}
+
+// Helper function to validate unique slug
+async function validateUniqueSlug(
+  slug: string,
+  listKey: string,
+  itemId: string | undefined,
+  context: any,
+  addValidationError: (msg: string) => void
+) {
+  if (!slug) return;
+
+  try {
+    const existingItems = await context.query[ listKey ].findMany({
+      where: { slug: { equals: slug } },
+      query: 'id slug'
+    });
+
+    // Filter out the current item if we're updating
+    const duplicates = existingItems.filter((item: any) => item.id !== itemId);
+
+    if (duplicates.length > 0) {
+      const listName = listKey === 'Post' ? 'post' : 'page';
+      addValidationError(`This slug is already used by another ${listName}. Please choose a different slug or modify the title to generate a unique slug.`);
+    }
+  } catch (error) {
+    console.error(`Error validating slug uniqueness for ${listKey}:`, error);
+    addValidationError('Unable to validate slug uniqueness. Please try again.');
+  }
+}
+
 // Create Cloudinary configuration object
 const generalImageConfig = {
   cloudName,
@@ -210,10 +248,37 @@ export const lists = {
     fields: {
       title: text({ validation: { isRequired: true } }),
       slug: text({
-        validation: { isRequired: true },
         isIndexed: 'unique',
+        hooks: {
+          resolveInput: async ({ resolvedData, inputData }) => {
+            // Auto-generate slug from title if not provided or if title changed
+            if (resolvedData.title && (!inputData.slug || inputData.slug.trim() === '')) {
+              return createSlugFromTitle(resolvedData.title);
+            }
+            // If slug is provided, clean it up
+            if (resolvedData.slug) {
+              return resolvedData.slug.trim();
+            }
+            return resolvedData.slug;
+          },
+          validateInput: async ({ resolvedData, item, addValidationError, context }) => {
+            // Check if we have a slug after auto-generation
+            if (!resolvedData.slug || resolvedData.slug.trim() === '') {
+              addValidationError('Slug is required. Please provide a title to auto-generate a slug or enter a custom slug.');
+              return;
+            }
+
+            await validateUniqueSlug(
+              resolvedData.slug,
+              'GrantType',
+              item?.id,
+              context,
+              addValidationError
+            );
+          },
+        },
         ui: {
-          description: "This will be the URL of the grant page."
+          description: "Leave empty to auto-generate from title, or enter a custom URL-friendly slug."
         }
       }),
       ...group({
@@ -305,6 +370,40 @@ export const lists = {
           description: 'Title of Page',
         },
       }),
+      slug: text({
+        isIndexed: 'unique',
+        hooks: {
+          resolveInput: async ({ resolvedData, inputData }) => {
+            // Auto-generate slug from title if not provided or if title changed
+            if (resolvedData.title && (!inputData.slug || inputData.slug.trim() === '')) {
+              return createSlugFromTitle(resolvedData.title);
+            }
+            // If slug is provided, clean it up
+            if (resolvedData.slug) {
+              return resolvedData.slug.trim();
+            }
+            return resolvedData.slug;
+          },
+          validateInput: async ({ resolvedData, item, addValidationError, context }) => {
+            // Check if we have a slug after auto-generation
+            if (!resolvedData.slug || resolvedData.slug.trim() === '') {
+              addValidationError('Slug is required. Please provide a title to auto-generate a slug or enter a custom slug.');
+              return;
+            }
+
+            await validateUniqueSlug(
+              resolvedData.slug,
+              'Page',
+              item?.id,
+              context,
+              addValidationError
+            );
+          },
+        },
+        ui: {
+          description: 'Leave empty to auto-generate from title, or enter a custom URL-friendly slug.',
+        },
+      }),
       ...group({
         label: "Hero Section",
         description: "Details for Hero Section",
@@ -365,15 +464,6 @@ export const lists = {
           }),
         }),
       }),
-
-      slug: text({
-        validation: { isRequired: true },
-        isIndexed: 'unique',
-        ui: {
-          description: 'URL-friendly version of the title (e.g., about-us)',
-        },
-      }),
-
       toPublish: select({
         options: [
           { label: 'Published', value: 'published' },
@@ -411,6 +501,41 @@ export const lists = {
         validation: { isRequired: true },
         ui: {
           description: 'Title of Post',
+        },
+      }),
+
+      slug: text({
+        isIndexed: 'unique',
+        hooks: {
+          resolveInput: async ({ resolvedData, inputData }) => {
+            // Auto-generate slug from title if not provided or if title changed
+            if (resolvedData.title && (!inputData.slug || inputData.slug.trim() === '')) {
+              return createSlugFromTitle(resolvedData.title);
+            }
+            // If slug is provided, clean it up
+            if (resolvedData.slug) {
+              return resolvedData.slug.trim();
+            }
+            return resolvedData.slug;
+          },
+          validateInput: async ({ resolvedData, item, addValidationError, context }) => {
+            // Check if we have a slug after auto-generation
+            if (!resolvedData.slug || resolvedData.slug.trim() === '') {
+              addValidationError('Slug is required. Please provide a title to auto-generate a slug or enter a custom slug.');
+              return;
+            }
+
+            await validateUniqueSlug(
+              resolvedData.slug,
+              'Post',
+              item?.id,
+              context,
+              addValidationError
+            );
+          },
+        },
+        ui: {
+          description: 'Leave empty to auto-generate from title, or enter a custom URL-friendly slug.',
         },
       }),
 
@@ -456,14 +581,6 @@ export const lists = {
           linkToItem: true,
           inlineConnect: true,
           inlineCreate: { fields: [ 'name' ] },
-        },
-      }),
-
-      slug: text({
-        validation: { isRequired: true },
-        isIndexed: 'unique',
-        ui: {
-          description: 'URL-friendly version of the title (e.g., about-us)',
         },
       }),
 
