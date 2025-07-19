@@ -1,3 +1,6 @@
+// schema.ts - Add this at the top, before any other imports
+import 'dotenv/config'
+
 import { list, group } from '@keystone-6/core'
 import { allowAll } from '@keystone-6/core/access'
 import {
@@ -13,38 +16,39 @@ import { graphql } from '@keystone-6/core';
 import { document } from '@keystone-6/fields-document'
 import { type Lists } from '.keystone/types'
 
-// Debug Cloudinary configuration
+// Debug and validate Cloudinary configuration
 console.log('🔍 Schema Cloudinary Config Check:')
 console.log('CLOUDINARY_CLOUD_NAME:', process.env.CLOUDINARY_CLOUD_NAME)
 console.log('CLOUDINARY_API_KEY:', process.env.CLOUDINARY_API_KEY)
 console.log('CLOUDINARY_API_SECRET exists:', !!process.env.CLOUDINARY_API_SECRET)
 
-// Cloudinary configuration object
+// Validate environment variables before creating config
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME
+const apiKey = process.env.CLOUDINARY_API_KEY
+const apiSecret = process.env.CLOUDINARY_API_SECRET
+
+if (!cloudName || !apiKey || !apiSecret) {
+  throw new Error(`Missing Cloudinary environment variables:
+    CLOUDINARY_CLOUD_NAME: ${cloudName ? 'SET' : 'MISSING'}
+    CLOUDINARY_API_KEY: ${apiKey ? 'SET' : 'MISSING'}
+    CLOUDINARY_API_SECRET: ${apiSecret ? 'SET' : 'MISSING'}
+  `)
+}
+
+// Create Cloudinary configuration object
 const cloudinaryConfig = {
-  cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
-  apiKey: process.env.CLOUDINARY_API_KEY!,
-  apiSecret: process.env.CLOUDINARY_API_SECRET!,
+  cloudName,
+  apiKey,
+  apiSecret,
   folder: 'banners',
 }
 
-console.log('📁 Cloudinary config object:', {
-  ...cloudinaryConfig,
-  apiSecret: '***HIDDEN***'
+console.log('📁 Cloudinary config created successfully:', {
+  cloudName: cloudinaryConfig.cloudName,
+  apiKey: cloudinaryConfig.apiKey,
+  apiSecret: '***HIDDEN***',
+  folder: cloudinaryConfig.folder
 })
-
-// Debug access function
-const debugAccess = (operation: string) => {
-  return ({ session, context, listKey, fieldKey }: any) => {
-    console.log(`🔍 Access check - Operation: ${operation}, List: ${listKey}, Field: ${fieldKey || 'N/A'}`)
-    console.log(`👤 Session:`, session ? {
-      id: session.itemId,
-      name: session.data?.name
-    } : 'No session')
-
-    // Always allow for debugging
-    return true
-  }
-}
 
 export const lists = {
   HomePage: list({
@@ -99,12 +103,10 @@ export const lists = {
               validateInput: async ({ resolvedData, addValidationError }) => {
                 const url = resolvedData.ctaButtonUrl;
                 if (url) {
-                  // Allow relative URLs, mailto, tel
                   if (url.startsWith('/') || url.startsWith('#') || url.startsWith('mailto:') || url.startsWith('tel:')) {
                     return;
                   }
 
-                  // Validate absolute URLs
                   try {
                     new URL(url);
                   } catch {
@@ -133,7 +135,7 @@ export const lists = {
 
             const lines = [
               ...grantTypes.map(grant => {
-                const status = grant.isActive === 'visible' ? 'VISIBLE' : 'HIDDEN';
+                const status = grant.isDisplayed === 'visible' ? 'VISIBLE' : 'HIDDEN';
                 return `${status} ${grant.title} - ${grant.grantAmount} (${grant.availability})`;
               })
             ];
@@ -150,7 +152,6 @@ export const lists = {
           listView: { fieldMode: 'hidden' },
         }
       }),
-      // Meta fields
       toPublish: select({
         options: [
           { label: 'Published', value: 'published' },
@@ -162,7 +163,6 @@ export const lists = {
         },
       }),
       createdAt: timestamp({
-        // this sets the timestamp to Date.now() when the user is first created
         defaultValue: { kind: 'now' },
       }),
       updatedAt: timestamp({
@@ -181,6 +181,7 @@ export const lists = {
       },
     },
   }),
+
   GrantType: list({
     access: allowAll,
     fields: {
@@ -263,7 +264,7 @@ export const lists = {
     ui: {
       labelField: 'title',
       listView: {
-        initialColumns: [ 'title', 'isActive', 'updatedAt' ],
+        initialColumns: [ 'title', 'isDisplayed', 'updatedAt' ],
         initialSort: {
           field: 'updatedAt',
           direction: 'DESC'
@@ -271,6 +272,7 @@ export const lists = {
       },
     },
   }),
+
   Page: list({
     access: allowAll,
     fields: {
@@ -322,12 +324,10 @@ export const lists = {
               validateInput: async ({ resolvedData, addValidationError }) => {
                 const url = resolvedData.ctaButtonUrl;
                 if (url) {
-                  // Allow relative URLs, mailto, tel
                   if (url.startsWith('/') || url.startsWith('#') || url.startsWith('mailto:') || url.startsWith('tel:')) {
                     return;
                   }
 
-                  // Validate absolute URLs
                   try {
                     new URL(url);
                   } catch {
@@ -351,7 +351,6 @@ export const lists = {
         },
       }),
 
-      // Meta fields
       toPublish: select({
         options: [
           { label: 'Published', value: 'published' },
@@ -363,7 +362,6 @@ export const lists = {
         },
       }),
       createdAt: timestamp({
-        // this sets the timestamp to Date.now() when the user is first created
         defaultValue: { kind: 'now' },
       }),
       updatedAt: timestamp({
@@ -399,6 +397,7 @@ export const lists = {
           description: 'Upload a banner image for this post',
         },
       }),
+
       content: document({
         formatting: true,
         layouts: [
@@ -411,6 +410,7 @@ export const lists = {
         links: true,
         dividers: true,
       }),
+
       author: relationship({
         ref: 'User.posts',
         ui: {
@@ -422,6 +422,7 @@ export const lists = {
         },
         many: false,
       }),
+
       tags: relationship({
         ref: 'Tag.posts',
         many: true,
@@ -443,7 +444,6 @@ export const lists = {
         },
       }),
 
-      // Meta fields
       toPublish: select({
         options: [
           { label: 'Published', value: 'published' },
@@ -455,7 +455,6 @@ export const lists = {
         },
       }),
       createdAt: timestamp({
-        // this sets the timestamp to Date.now() when the user is first created
         defaultValue: { kind: 'now' },
       }),
       updatedAt: timestamp({
@@ -477,18 +476,14 @@ export const lists = {
 
   User: list({
     access: allowAll,
-
     fields: {
       name: text({ validation: { isRequired: true } }),
-
       email: text({
         validation: { isRequired: true },
         isIndexed: 'unique',
       }),
-
       password: password({ validation: { isRequired: true } }),
       posts: relationship({ ref: 'Post.author', many: true }),
-
       createdAt: timestamp({
         defaultValue: { kind: 'now' },
       }),
@@ -500,7 +495,6 @@ export const lists = {
     ui: {
       isHidden: true,
     },
-
     fields: {
       name: text(),
       posts: relationship({ ref: 'Post.tags', many: true }),
