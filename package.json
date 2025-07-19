@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "keystone dev",
-    "start": "keystone prisma generate && keystone start",
+    "start": "keystone build && keystone prisma migrate deploy && keystone start",
     "build": "keystone build"
   },
   "dependencies": {
