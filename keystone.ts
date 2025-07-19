@@ -43,12 +43,24 @@ try {
   process.exit(1)
 }
 
+// NEW VERSION - chooses provider dynamically
+let databaseConfig;
+
+if (process.env.NODE_ENV === 'production' || process.env.DATABASE_URL?.startsWith('postgres')) {
+  databaseConfig = {
+    provider: 'postgresql' as const,  // ← PostgreSQL in production
+    url: process.env.DATABASE_URL,
+  };
+} else {
+  databaseConfig = {
+    provider: 'sqlite' as const,      // ← SQLite only in development
+    url: process.env.DATABASE_URL || 'file:./keystone.db',
+  };
+}
+
 export default withAuth(
   config({
-    db: {
-      provider: 'sqlite',
-      url: process.env.DATABASE_URL || 'file:./keystone.db',
-    },
+    db: databaseConfig,  // ← Uses the conditional config
     lists,
     session,
     server: {
