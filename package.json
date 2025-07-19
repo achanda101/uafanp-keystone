@@ -6,10 +6,11 @@
     "dev": "keystone dev",
     "start": "keystone start",
     "build": "keystone build && keystone prisma migrate deploy",
-    "deploy": "keystone build && keystone prisma migrate deploy && keystone start",
+    "deploy": "node scripts/init-db.js && keystone start",
     "migrate": "keystone prisma migrate deploy",
     "db:reset": "keystone prisma migrate reset --force",
-    "db:seed": "keystone prisma db seed"
+    "db:seed": "keystone prisma db seed",
+    "init-db": "node scripts/init-db.js"
   },
   "dependencies": {
     "@keystone-6/auth": "^8.0.0",
