@@ -3,27 +3,25 @@
   "version": "1.0.3",
   "private": true,
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+    "node": "18.x"
   },
   "scripts": {
     "dev": "keystone dev",
     "start": "keystone start",
     "build": "keystone build",
-    "postbuild": "keystone prisma migrate deploy || true",
-    "deploy": "npm run build && npm run postbuild && keystone start",
-    "railway:build": "npm ci --production=false && keystone build",
+    "postinstall": "keystone postinstall --fix",
     "railway:start": "keystone prisma migrate deploy && keystone start"
   },
   "dependencies": {
-    "@keystone-6/auth": "^8.0.0",
-    "@keystone-6/cloudinary": "^8.0.0",
-    "@keystone-6/core": "^6.0.0",
-    "@keystone-6/fields-document": "^9.0.0",
-    "dotenv": "^17.2.0",
-    "typescript": "^5.5.0"
+    "@keystone-6/auth": "8.0.0",
+    "@keystone-6/cloudinary": "8.0.0",
+    "@keystone-6/core": "6.0.0",
+    "@keystone-6/fields-document": "9.0.0",
+    "dotenv": "16.3.1",
+    "typescript": "5.3.3"
   },
-  "devDependencies": {
-    "@types/node": "^18.0.0"
+  "overrides": {
+    "prisma": "5.7.1",
+    "@prisma/client": "5.7.1"
   }
 }
