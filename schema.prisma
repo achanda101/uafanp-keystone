@@ -36,7 +36,7 @@ model GrantType {
   badgeColor      String?   @default("grant-turmeric")
   backgroundColor String?   @default("light-sky")
   grantPurpose    String    @default("")
-  isDisplayed     String?   @default("visible")
+  isVisible       Boolean   @default(false)
   createdAt       DateTime? @default(now())
   updatedAt       DateTime? @default(now()) @updatedAt
 }

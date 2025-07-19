@@ -9,7 +9,8 @@ import {
   password,
   timestamp,
   select,
-  virtual
+  virtual,
+  checkbox
 } from '@keystone-6/core/fields';
 import { cloudinaryImage } from '@keystone-6/cloudinary'
 import { graphql } from '@keystone-6/core';
@@ -187,7 +188,7 @@ export const lists = {
           type: graphql.String,
           async resolve(item, args, context) {
             const grantTypes = await context.query.GrantType.findMany({
-              query: 'title isDisplayed grantAmount availability'
+              query: 'title isVisible grantAmount availability'
             });
 
             if (!grantTypes || grantTypes.length === 0) {
@@ -196,8 +197,9 @@ export const lists = {
 
             const lines = [
               ...grantTypes.map(grant => {
-                const status = grant.isDisplayed === 'visible' ? 'VISIBLE' : 'HIDDEN';
-                return `${status} ${grant.title} - ${grant.grantAmount} (${grant.availability})`;
+                const status = grant.isVisible ? (
+                  `${grant.title} - ${grant.grantAmount} (${grant.availability})`) : ('');
+                return status;
               })
             ];
             return lines.join(' || ');
@@ -331,14 +333,10 @@ export const lists = {
           description: "Detailed description of this grant's purpose and goals. This content appears on the dedicated grant page and helps defenders determine if they should apply."
         }
       }),
-      isDisplayed: select({
-        options: [
-          { label: 'Visible', value: 'visible' },
-          { label: 'Hidden', value: 'hidden' },
-        ],
-        defaultValue: 'visible',
+      isVisible: checkbox({
+        defaultValue: false,
         ui: {
-          description: "If visible, the Grant Card will appear on the Homepage and a dedicated grant page will be published."
+          description: "If checked, the Grant Card will appear on the Homepage and a dedicated grant page will be published."
         }
       }),
       createdAt: timestamp({
@@ -352,7 +350,7 @@ export const lists = {
     ui: {
       labelField: 'title',
       listView: {
-        initialColumns: [ 'title', 'isDisplayed', 'updatedAt' ],
+        initialColumns: [ 'title', 'isVisible', 'updatedAt' ],
         initialSort: {
           field: 'updatedAt',
           direction: 'DESC'
