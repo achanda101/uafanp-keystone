@@ -18,6 +18,7 @@ import {
   select,
   virtual
 } from '@keystone-6/core/fields';
+import { cloudinaryImage } from '@keystone-6/cloudinary'
 import { graphql } from '@keystone-6/core';
 
 // the document field is a more complicated field, so it has it's own package
@@ -27,6 +28,11 @@ import { document } from '@keystone-6/fields-document'
 // when using Typescript, you can refine your types to a stricter subset by importing
 // the generated types from '.keystone/types'
 import { type Lists } from '.keystone/types'
+
+import dotenv from 'dotenv'
+
+// Load environment variables
+dotenv.config()
 
 export const lists = {
   HomePage: list({
@@ -106,7 +112,7 @@ export const lists = {
           type: graphql.String,
           async resolve(item, args, context) {
             const grantTypes = await context.query.GrantType.findMany({
-              query: 'title isActive grantAmount availability'
+              query: 'title isDisplayed grantAmount availability'
             });
 
             if (!grantTypes || grantTypes.length === 0) {
@@ -115,7 +121,7 @@ export const lists = {
 
             const lines = [
               ...grantTypes.map(grant => {
-                const status = grant.isActive === 'active' ? 'ACTIVE' : 'INACTIVE';
+                const status = grant.isActive === 'visible' ? 'VISIBLE' : 'HIDDEN';
                 return `${status} ${grant.title} - ${grant.grantAmount} (${grant.availability})`;
               })
             ];
@@ -224,13 +230,15 @@ export const lists = {
           description: "Detailed description of this grant's purpose and goals. This content appears on the dedicated grant page and helps defenders determine if they should apply."
         }
       }),
-      isActive: select({
+      isDisplayed: select({
         options: [
-          { label: 'Active', value: 'active' },
-          { label: 'Inactive', value: 'inactive' },
-          { label: 'Coming Soon', value: 'coming-soon' },
+          { label: 'Visible', value: 'visible' },
+          { label: 'Hidden', value: 'hidden' },
         ],
-        defaultValue: 'active',
+        defaultValue: 'visible',
+        ui: {
+          description: "If visible, the Grant Card will appear on the Homepage and a dedicated grant page will be published."
+        }
       }),
       createdAt: timestamp({
         defaultValue: { kind: 'now' },
@@ -374,6 +382,14 @@ export const lists = {
     fields: {
       title: text({ validation: { isRequired: true } }),
 
+      banner: cloudinaryImage({
+        cloudinary: {
+          cloudName: process.env.CLOUDINARY_CLOUD_NAME ?? '',
+          apiKey: process.env.CLOUDINARY_API_KEY ?? '',
+          apiSecret: process.env.CLOUDINARY_API_SECRET ?? '',
+          folder: 'banners',
+        },
+      }),
       // the document field can be used for making rich editable content
       //   you can find out more at https://keystonejs.com/docs/guides/document-fields
       content: document({

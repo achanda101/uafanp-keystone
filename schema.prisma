@@ -36,7 +36,7 @@ model GrantType {
   badgeColor      String?   @default("grant-turmeric")
   backgroundColor String?   @default("light-sky")
   grantPurpose    String    @default("")
-  isActive        String?   @default("active")
+  isDisplayed     String?   @default("visible")
   createdAt       DateTime? @default(now())
   updatedAt       DateTime? @default(now()) @updatedAt
 }
@@ -57,6 +57,7 @@ model Page {
 model Post {
   id       String  @id @default(cuid())
   title    String  @default("")
+  banner   String?
   content  String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
   author   User?   @relation("Post_author", fields: [authorId], references: [id])
   authorId String? @map("author")
