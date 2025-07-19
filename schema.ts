@@ -30,11 +30,47 @@ if (!cloudName || !apiKey || !apiSecret) {
 }
 
 // Create Cloudinary configuration object
-const cloudinaryConfig = {
+const generalImageConfig = {
+  cloudName,
+  apiKey,
+  apiSecret,
+  folder: 'images',
+  uploadOptions: {
+    resource_type: 'image',
+    allowed_formats: [ 'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg' ],
+    max_file_size: 10000000, // 10MB for general images
+    quality: 'auto',
+  },
+  // Transformation options for optimization
+  transformation: {
+    fetch_format: 'auto',
+    quality: 'auto',
+    // Optional: Add max dimensions
+    width: 2000,
+    height: 2000,
+    crop: 'limit', // Don't upscale, only downscale if larger
+  },
+}
+
+const bannerCloudinaryConfig = {
   cloudName,
   apiKey,
   apiSecret,
   folder: 'banners',
+  uploadOptions: {
+    resource_type: 'image',
+    allowed_formats: [ 'jpg', 'jpeg', 'png', 'webp', 'tiff' ], // More restrictive for banners
+    max_file_size: 5000000, // 5MB for banners
+    quality: 'auto',
+  },
+  transformation: {
+    fetch_format: 'auto',
+    quality: 'auto',
+    // Optional: Add max dimensions
+    width: 2000,
+    height: 2000,
+    crop: 'limit', // Don't upscale, only downscale if larger
+  },
 }
 
 export const lists = {
@@ -379,7 +415,7 @@ export const lists = {
       }),
 
       banner: cloudinaryImage({
-        cloudinary: cloudinaryConfig,
+        cloudinary: bannerCloudinaryConfig,
         ui: {
           description: 'Upload a banner image for this post',
         },
