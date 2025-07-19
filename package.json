@@ -9,8 +9,8 @@
     "dev": "keystone dev",
     "start": "keystone start",
     "build": "keystone build",
-    "railway:start": "node scripts/start.js",
-    "railway:start-simple": "keystone start"
+    "railway:start": "keystone dev",
+    "railway:start-complex": "node scripts/start.js"
   },
   "dependencies": {
     "@keystone-6/auth": "7.0.3",
