@@ -1,11 +1,15 @@
 {
-  "name": "keystone-app",
+  "name": "uafanp-keystone-app",
   "version": "1.0.3",
   "private": true,
   "scripts": {
     "dev": "keystone dev",
     "start": "keystone start",
-    "build": "keystone build"
+    "build": "keystone build && keystone prisma migrate deploy",
+    "deploy": "keystone build && keystone prisma migrate deploy && keystone start",
+    "migrate": "keystone prisma migrate deploy",
+    "db:reset": "keystone prisma migrate reset --force",
+    "db:seed": "keystone prisma db seed"
   },
   "dependencies": {
     "@keystone-6/auth": "^8.0.0",
