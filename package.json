@@ -2,15 +2,18 @@
   "name": "uafanp-keystone-app",
   "version": "1.0.3",
   "private": true,
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
     "dev": "keystone dev",
     "start": "keystone start",
-    "build": "keystone build && keystone prisma migrate deploy",
-    "deploy": "node scripts/init-db.js && keystone start",
-    "migrate": "keystone prisma migrate deploy",
-    "db:reset": "keystone prisma migrate reset --force",
-    "db:seed": "keystone prisma db seed",
-    "init-db": "node scripts/init-db.js"
+    "build": "keystone build",
+    "postbuild": "keystone prisma migrate deploy || true",
+    "deploy": "npm run build && npm run postbuild && keystone start",
+    "railway:build": "npm ci --production=false && keystone build",
+    "railway:start": "keystone prisma migrate deploy && keystone start"
   },
   "dependencies": {
     "@keystone-6/auth": "^8.0.0",
@@ -19,5 +22,8 @@
     "@keystone-6/fields-document": "^9.0.0",
     "dotenv": "^17.2.0",
     "typescript": "^5.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0"
   }
 }
