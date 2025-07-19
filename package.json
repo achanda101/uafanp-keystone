@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "keystone dev",
-    "start": "keystone start",
+    "start": "keystone prisma generate && keystone start",
     "build": "keystone build"
   },
   "dependencies": {
