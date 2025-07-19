@@ -1,5 +1,5 @@
 {
-  "name": "keystone-app",
+  "name": "uafanp-keystone-app",
   "version": "1.0.3",
   "private": true,
   "engines": {
@@ -9,7 +9,7 @@
     "dev": "keystone dev",
     "start": "keystone start",
     "build": "keystone build",
-    "railway:start": "keystone prisma migrate reset --force && keystone start",
+    "railway:start": "keystone prisma db push --force-reset && keystone start",
     "railway:start-safe": "keystone prisma migrate deploy && keystone start"
   },
   "dependencies": {
