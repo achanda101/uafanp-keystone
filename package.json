@@ -8,8 +8,7 @@
   "scripts": {
     "dev": "keystone dev",
     "start": "keystone start",
-    "build": "keystone build || echo 'Build failed but continuing...'",
-    "railway:start": "prisma generate && keystone dev"
+    "build": "keystone build && keystone prisma migrate deploy"
   },
   "dependencies": {
     "@keystone-6/auth": "7.0.3",
