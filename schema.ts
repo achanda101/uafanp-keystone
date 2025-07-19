@@ -1,4 +1,4 @@
-// schema.ts - Add this at the top, before any other imports
+// schema.ts
 import 'dotenv/config'
 
 import { list, group } from '@keystone-6/core'
@@ -15,12 +15,6 @@ import { cloudinaryImage } from '@keystone-6/cloudinary'
 import { graphql } from '@keystone-6/core';
 import { document } from '@keystone-6/fields-document'
 import { type Lists } from '.keystone/types'
-
-// Debug and validate Cloudinary configuration
-console.log('🔍 Schema Cloudinary Config Check:')
-console.log('CLOUDINARY_CLOUD_NAME:', process.env.CLOUDINARY_CLOUD_NAME)
-console.log('CLOUDINARY_API_KEY:', process.env.CLOUDINARY_API_KEY)
-console.log('CLOUDINARY_API_SECRET exists:', !!process.env.CLOUDINARY_API_SECRET)
 
 // Validate environment variables before creating config
 const cloudName = process.env.CLOUDINARY_CLOUD_NAME
@@ -42,13 +36,6 @@ const cloudinaryConfig = {
   apiSecret,
   folder: 'banners',
 }
-
-console.log('📁 Cloudinary config created successfully:', {
-  cloudName: cloudinaryConfig.cloudName,
-  apiKey: cloudinaryConfig.apiKey,
-  apiSecret: '***HIDDEN***',
-  folder: cloudinaryConfig.folder
-})
 
 export const lists = {
   HomePage: list({
