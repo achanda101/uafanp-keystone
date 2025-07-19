@@ -9,8 +9,8 @@
     "dev": "keystone dev",
     "start": "keystone start",
     "build": "keystone build",
-    "railway:start": "keystone prisma db push --force-reset && keystone start",
-    "railway:start-safe": "keystone prisma migrate deploy && keystone start"
+    "railway:start": "node scripts/start.js",
+    "railway:start-simple": "keystone start"
   },
   "dependencies": {
     "@keystone-6/auth": "7.0.3",
@@ -19,6 +19,7 @@
     "dotenv": "16.3.1",
     "typescript": "5.2.2",
     "prisma": "5.6.0",
-    "@prisma/client": "5.6.0"
+    "@prisma/client": "5.6.0",
+    "pg": "8.11.3"
   }
 }
