@@ -9,7 +9,8 @@
     "dev": "keystone dev",
     "start": "keystone start",
     "build": "keystone build",
-    "railway:start": "keystone prisma migrate deploy && keystone start"
+    "railway:start": "keystone prisma migrate reset --force && keystone start",
+    "railway:start-safe": "keystone prisma migrate deploy && keystone start"
   },
   "dependencies": {
     "@keystone-6/auth": "7.0.3",
