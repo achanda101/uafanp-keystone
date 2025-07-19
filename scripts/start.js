@@ -1,6 +1,8 @@
 // scripts/start.js
 const { spawn } = require('child_process');
 const { Client } = require('pg');
+const fs = require('fs');
+const path = require('path');
 
 async function resetDatabase() {
     if (!process.env.DATABASE_URL || !process.env.DATABASE_URL.startsWith('postgres')) {
@@ -33,13 +35,52 @@ async function resetDatabase() {
     }
 }
 
+function cleanupPrismaFiles() {
+    console.log('🧹 Cleaning up old Prisma files...');
+
+    const filesToDelete = [
+        'schema.prisma',
+        'prisma/schema.prisma',
+        '.keystone/schema.prisma'
+    ];
+
+    const dirsToDelete = [
+        '.keystone',
+        'node_modules/.prisma',
+        'prisma'
+    ];
+
+    for (const file of filesToDelete) {
+        try {
+            if (fs.existsSync(file)) {
+                fs.unlinkSync(file);
+                console.log(`Deleted: ${file}`);
+            }
+        } catch (error) {
+            console.log(`Could not delete ${file}:`, error.message);
+        }
+    }
+
+    for (const dir of dirsToDelete) {
+        try {
+            if (fs.existsSync(dir)) {
+                fs.rmSync(dir, { recursive: true, force: true });
+                console.log(`Deleted directory: ${dir}`);
+            }
+        } catch (error) {
+            console.log(`Could not delete ${dir}:`, error.message);
+        }
+    }
+}
+
 function runCommand(command, args = []) {
     return new Promise((resolve, reject) => {
         console.log(`🚀 Running: ${command} ${args.join(' ')}`);
 
         const child = spawn(command, args, {
             stdio: 'inherit',
-            shell: true
+            shell: true,
+            env: { ...process.env, NODE_ENV: 'production' }
         });
 
         child.on('close', (code) => {
@@ -56,20 +97,19 @@ function runCommand(command, args = []) {
 
 async function start() {
     try {
-        // Step 1: Reset the database
+        console.log('🌟 Starting fresh Keystone deployment...');
+        console.log(`Database URL: ${process.env.DATABASE_URL ? 'Set' : 'Not set'}`);
+        console.log(`Node ENV: ${process.env.NODE_ENV}`);
+
+        // Step 1: Clean up any old Prisma files
+        cleanupPrismaFiles();
+
+        // Step 2: Reset the database
         await resetDatabase();
 
-        // Step 2: Generate Prisma client
-        console.log('🔧 Generating Prisma client...');
-        await runCommand('npx', [ 'prisma', 'generate' ]);
-
-        // Step 3: Push schema to database
-        console.log('📊 Pushing schema to database...');
-        await runCommand('npx', [ 'prisma', 'db', 'push', '--force-reset' ]);
-
-        // Step 4: Start Keystone
-        console.log('🎯 Starting Keystone...');
-        await runCommand('npx', [ 'keystone', 'start' ]);
+        // Step 3: Start Keystone in dev mode (handles schema generation automatically)
+        console.log('🎯 Starting Keystone in dev mode...');
+        await runCommand('npx', [ 'keystone', 'dev' ]);
 
     } catch (error) {
         console.error('❌ Startup failed:', error.message);
