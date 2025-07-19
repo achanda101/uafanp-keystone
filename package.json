@@ -9,8 +9,9 @@
     "dev": "keystone dev",
     "start": "keystone start",
     "build": "keystone build",
-    "railway:start": "node scripts/start.js",
-    "railway:start-simple": "keystone dev"
+    "postbuild": "prisma generate",
+    "railway:start": "prisma generate && keystone dev",
+    "railway:start-debug": "node scripts/start.js"
   },
   "dependencies": {
     "@keystone-6/auth": "7.0.3",
