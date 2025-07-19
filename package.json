@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "keystone dev",
-    "start": "keystone dev",
+    "start": "keystone prisma db push && keystone start",
     "build": "keystone build"
   },
   "dependencies": {
